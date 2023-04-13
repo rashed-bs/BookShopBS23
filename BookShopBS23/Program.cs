@@ -5,6 +5,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews().AddJsonOptions(o =>
+{
+    o.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    o.JsonSerializerOptions.PropertyNamingPolicy = null;
+});
 builder.Services.AddDbContext<BookShopDbContex>(options => 
     options.UseSqlServer(builder.Configuration.GetConnectionString("BookShopBS23ConnectionString")));
 
