@@ -56,7 +56,7 @@ namespace BookShopBS23.Controllers
         // POST: Book/Create
         [HttpPost] // only post methods
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("BookId,Title,Description,publicationDate,ISBN,Genre,Language,CoverPhoto,AuthorId")] Book book, IFormFile CoverPhoto)
+        public async Task<IActionResult> Create([Bind("BookId,Title,Description,publicationDate,ISBN,Genre,Language,AuthorId")] Book book, IFormFile CoverPhoto)
         {
             if (ModelState.IsValid)
             {
@@ -101,7 +101,7 @@ namespace BookShopBS23.Controllers
         // POST: Books/Edit/id
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("BookId,Title,Description,publicationDate,ISBN,Genre,Language,CoverPhoto,AuthorId")] Book book, IFormFile CoverPhoto)
+        public async Task<IActionResult> Edit(string id, [Bind("BookId,Title,Description,publicationDate,ISBN,Genre,Language,AuthorId")] Book book, IFormFile CoverPhoto)
         {
             if(id != book.BookId) // ensuring security 
             {
