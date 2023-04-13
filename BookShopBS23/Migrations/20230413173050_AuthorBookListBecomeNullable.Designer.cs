@@ -4,6 +4,7 @@ using BookShopBS23.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookShopBS23.Migrations
 {
     [DbContext(typeof(BookShopDbContex))]
-    partial class BookShopDbContexModelSnapshot : ModelSnapshot
+    [Migration("20230413173050_AuthorBookListBecomeNullable")]
+    partial class AuthorBookListBecomeNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
