@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BookShopBS23.Data;
 using BookShopBS23.Models;
+using BookShopBS23.ViewModels;
 
 namespace BookShopBS23.Controllers
 {
@@ -56,28 +57,47 @@ namespace BookShopBS23.Controllers
         // POST: Book/Create
         [HttpPost] // only post methods
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("BookId,Title,Description,publicationDate,ISBN,Genre,Language,AuthorId")] Book book, IFormFile CoverPhoto)
+        public async Task<IActionResult> Create(BookCreationViewModel bookCreationViewModel)
         {
+            if(bookCreationViewModel == null)
+            {
+                return NotFound();
+            }
             if (ModelState.IsValid)
             {
-                if(CoverPhoto != null && CoverPhoto.Length > 0)
+                // convert viewModel object to book model object
+                var book = new Book()
                 {
-                    byte[] bytes;
-                    using (var ms = new MemoryStream()) // creating a memory stream
-                    {
-                        CoverPhoto.CopyTo(ms);
-                        bytes = ms.ToArray();
-                    }
-                    book.CoverPhoto = bytes;
+                    Title = bookCreationViewModel.Title,
+                    Genre = bookCreationViewModel.Genre,
+                    Description = bookCreationViewModel.Description,
+                    ISBN = bookCreationViewModel.ISBN,
+                    Language = bookCreationViewModel.Language,
+                    publicationDate = bookCreationViewModel.publicationDate,
+                    AuthorId = bookCreationViewModel.AuthorId
+                };
+                // converting the coverPhoto from FormFile to byte array
+                var memoryStream = new MemoryStream();
+                bookCreationViewModel.CoverPhoto.CopyTo(memoryStream);
+                book.CoverPhoto = memoryStream.ToArray();
+
+                // getting the author of the book 
+                var authorOfTheBook = await bookShopDbContext.Authors.FindAsync(bookCreationViewModel.AuthorId);
+                if(authorOfTheBook == null)
+                {
+                    return Problem("Author of the book not found in the 'BookShopDbContext.Author' entity");
                 }
-                bookShopDbContext.Add(book); // adds the book 
-                await bookShopDbContext.SaveChangesAsync();
+                book.Author = authorOfTheBook;
+
+                // adding to the context
+                bookShopDbContext.Add(book); 
+                await bookShopDbContext.SaveChangesAsync(); // adding to the database
                 return RedirectToAction(nameof(Index));
             }
             // if Model state not valid 
             var authors = await bookShopDbContext.Authors.ToListAsync();
             ViewBag.Authors = authors;
-            return View(book); // resending the book so the used might not reenter all the fields
+            return View(bookCreationViewModel); // resending the bookCreationViewModel so the user might not reenter all the fields
         }
 
         // GET: Book/Edit/id
@@ -95,15 +115,32 @@ namespace BookShopBS23.Controllers
             }
             var authors = bookShopDbContext.Authors.ToList();
             ViewBag.Authors = authors;
-            return View(book);
+            // from Book model object to BookEditViewModel object
+            var bookEditViewModel = new BookEditViewModel()
+            {
+                AuthorId = book.AuthorId,
+                BookId = book.BookId,
+                Genre = book.Genre,
+                ISBN = book.ISBN,
+                Language = book.Language,
+                Title = book.Title,
+                Description = book.Description,
+                publicationDate = book.publicationDate
+            };
+
+            var stream = new MemoryStream(book.CoverPhoto);
+            IFormFile formFile = new FormFile(stream, 0, book.CoverPhoto.Length, "name", "fileName");
+            bookEditViewModel.CoverPhoto = formFile;
+
+            return View(bookEditViewModel);
         }
 
         // POST: Books/Edit/id
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("BookId,Title,Description,publicationDate,ISBN,Genre,Language,AuthorId")] Book book, IFormFile CoverPhoto)
+        public async Task<IActionResult> Edit(string id, BookEditViewModel bookEditViewModel)
         {
-            if(id != book.BookId) // ensuring security 
+            if(id != bookEditViewModel.BookId) // ensuring security 
             {
                 return NotFound();
             }
@@ -111,22 +148,39 @@ namespace BookShopBS23.Controllers
             {
                 try
                 {
-                    byte[] bytes;
-                    using (var ms = new MemoryStream()) // creating a memory stream
+                    var book = new Book()
                     {
-                        CoverPhoto.CopyTo(ms);
-                        bytes = ms.ToArray();
-                    }
-                    book.CoverPhoto = bytes;
-                    bookShopDbContext.Update(book); // updating to the database context
+                        Title = bookEditViewModel.Title,
+                        Genre = bookEditViewModel.Genre,
+                        Description = bookEditViewModel.Description,
+                        ISBN = bookEditViewModel.ISBN,
+                        Language = bookEditViewModel.Language,
+                        publicationDate = bookEditViewModel.publicationDate,
+                        AuthorId = bookEditViewModel.AuthorId
+                    };
+                    // converting the coverPhoto from FormFile to byte array
+                    var memoryStream = new MemoryStream();
+                    bookEditViewModel.CoverPhoto.CopyTo(memoryStream);
+                    book.CoverPhoto = memoryStream.ToArray();
 
-                    await bookShopDbContext.SaveChangesAsync();// saving the changes to the database
+                    // getting the author of the book 
+                    var authorOfTheBook = await bookShopDbContext.Authors.FindAsync(bookEditViewModel.AuthorId);
+                    if (authorOfTheBook == null)
+                    {
+                        return Problem("Author of the book not found in the 'BookShopDbContext.Author' entity");
+                    }
+                    book.Author = authorOfTheBook;
+
+                    // adding to the context
+                    bookShopDbContext.Add(book);
+                    await bookShopDbContext.SaveChangesAsync(); // adding to the database
+                    return RedirectToAction(nameof(Index));
                 }
                 catch(DbUpdateConcurrencyException)
                 {
-                    if(!BookExists(book.BookId))
+                    if(!BookExists(bookEditViewModel.BookId))
                     {
-                        if(!BookExists(book.BookId))
+                        if(!BookExists(bookEditViewModel.BookId))
                         {
                             return NotFound();
                         } 
@@ -140,11 +194,8 @@ namespace BookShopBS23.Controllers
             }
             var authors = await bookShopDbContext.Authors.ToListAsync();
             ViewBag.Authors = authors;
-            return View(book);
+            return View(bookEditViewModel);
         }
-
-
-
 
         // GET: Book/Delete/id
         public async Task<IActionResult> Delete(string id)
@@ -163,8 +214,6 @@ namespace BookShopBS23.Controllers
             }
             return View(book);
         }
-
-
 
         // POST: Book/Delete/5
         [HttpPost, ActionName("Delete")]
@@ -185,7 +234,6 @@ namespace BookShopBS23.Controllers
             await bookShopDbContext.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-
 
         private bool BookExists(string id)
         {
