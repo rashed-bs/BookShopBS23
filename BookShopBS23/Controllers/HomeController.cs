@@ -15,7 +15,7 @@ namespace BookShopBS23.Controllers
 
         public async Task<IActionResult> Index()
         {
-            return View();
+            return RedirectToAction("Index", "Book");
         }
 
         public async Task<IActionResult> Privacy()
