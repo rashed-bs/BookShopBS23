@@ -68,7 +68,8 @@ namespace BookShopBS23.Controllers
                 {
                     AuthorName = authorCreationViewModel.AuthorName,
                     AuthorEmail = authorCreationViewModel.AuthorEmail,
-                    Description = authorCreationViewModel.Description
+                    Description = authorCreationViewModel.Description, 
+                    PictureFormat = authorCreationViewModel.AuthorPhoto.ContentType
                 };
 
                 var memoryStream = new MemoryStream();
@@ -138,6 +139,7 @@ namespace BookShopBS23.Controllers
                     author.AuthorName = authorEditViewModel.AuthorName;
                     author.AuthorEmail = authorEditViewModel.AuthorEmail;
                     author.Description = authorEditViewModel.Description;
+                    author.PictureFormat = authorEditViewModel.AuthorPhoto.ContentType;
 
                     // from iformfile to byte array
                     var memoryStream = new MemoryStream();

@@ -16,6 +16,8 @@ namespace BookShopBS23.Models
 
         public Byte[] AuthorPhoto { get; set; }
 
+        public string PictureFormat { get; set; }
+
         // Navigation properties 
         public ICollection<Book>? Books { get; set; }
     }

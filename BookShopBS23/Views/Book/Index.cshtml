@@ -65,7 +65,9 @@
                     @Html.DisplayFor(modelItem => item.CoverPhoto)
                 </td>*@
                 <td>
-                    @Html.DisplayFor(modelItem => item.Author.AuthorId)
+                    <a asp-controller="Author" asp-action="Details" asp-route-id="@item.AuthorId">
+                        @Html.DisplayFor(modelItem => item.Author.AuthorName)
+                    </a>
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.BookId">Edit</a> |
