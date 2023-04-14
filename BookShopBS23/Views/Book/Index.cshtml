@@ -1,12 +1,15 @@
-﻿@model IEnumerable<BookShopBS23.Models.Book>
+﻿@model IEnumerable<BookShopBS23.ViewModels.BookIndexPageViewModel>
 
 @{
     ViewBag.Title = "All the avaiable Books";
 }
 
 <h1>@ViewBag.Title</h1> 
+
 <p>
-    <a asp-acton="Create">Create New</a>
+    <a asp-action="Create" style="text-decoration: none; float:right">
+        <h5>Create New</h5>
+    </a>
 </p>
 
 <table class="table">
@@ -16,23 +19,11 @@
                 @Html.DisplayNameFor(model => model.Title)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.publicationDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ISBN)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Genre)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.Language)
             </th>
-            @*<th>
+            <th>
                 @Html.DisplayNameFor(model => model.CoverPhoto)
-            </th>*@
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.Author)
             </th>
@@ -40,39 +31,33 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @foreach (var item in Model.Select((value, index) => new {Value = value, Index = index}))
         {
-            <tr>
+
+            <tr class="@((item.Index % 2 == 0) ? "even" : "odd") ">
                 <td>
-                    @Html.DisplayFor(modelItem => item.Title)
+                    <a asp-action="Details" style="text-decoration: none;" asp-route-id="@item.Value.BookId">
+                        @Html.DisplayFor(modelItem => item.Value.Title)
+                    </a>
+                   
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Description)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.publicationDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ISBN)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Genre)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Language)
-                </td>
-                @*<td>
-                    @Html.DisplayFor(modelItem => item.CoverPhoto)
+            @*    <td>
+                    @Html.DisplayFor(modelItem => item.Value.Description)
                 </td>*@
                 <td>
-                    <a asp-controller="Author" asp-action="Details" asp-route-id="@item.AuthorId">
-                        @Html.DisplayFor(modelItem => item.Author.AuthorName)
+                    @Html.DisplayFor(modelItem => item.Value.Language)
+                </td>
+                <td>
+                    <img src="data:@item.Value.PictureFormat;base64,@item.Value.CoverPhoto" width="80" height="100" />
+                </td>
+                <td>
+                    <a asp-controller="Author" asp-action="Details" style="text-decoration: none;" asp-route-id="@item.Value.AuthorId">
+                        @Html.DisplayFor(modelItem => item.Value.Author.AuthorName)
                     </a>
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.BookId">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.BookId">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.BookId">Delete</a>
+                    <a asp-action="Edit" style="text-decoration: none;" asp-route-id="@item.Value.BookId">Edit</a> |
+                    <a asp-action="Delete" style="text-decoration: none;" asp-route-id="@item.Value.BookId">Delete</a>
                 </td>
             </tr>
         }

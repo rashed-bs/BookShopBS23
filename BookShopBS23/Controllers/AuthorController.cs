@@ -23,9 +23,27 @@ namespace BookShopBS23.Controllers
         // GET: Author
         public async Task<IActionResult> Index()
         {
-            return bookShopDbContext.Authors != null ?
-                        View(await bookShopDbContext.Authors.ToListAsync()) :
-                        Problem("Entity set 'BookShopDbContex.Authors'  is null.");
+            if(bookShopDbContext.Authors == null)
+            {
+                return Problem("The Author Entity doesn't exits in 'BookShopDbContex.Authors'");
+            }
+            var authors = await bookShopDbContext.Authors.ToListAsync();
+            var authorsViewModel = new List<AuthorIndexViewModel>();
+            
+            foreach (var author in authors)
+            {
+                var authorViewModel = new AuthorIndexViewModel()
+                {
+                    AuthorEmail = author.AuthorEmail,
+                    AuthorName = author.AuthorName,
+                    AuthorId = author.AuthorId,
+                    Description = author.Description,
+                    PictureFormat = author.PictureFormat,
+                    AuthorPhoto = Convert.ToBase64String(author.AuthorPhoto)
+                };
+                authorsViewModel.Add(authorViewModel);
+            }
+            return View(authorsViewModel);
         }
 
         // GET: Author/Details/id
