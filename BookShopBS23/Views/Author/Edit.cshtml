@@ -13,27 +13,32 @@
         <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="AuthorId" />
-            <div class="form-group">
+            <div class="form-group mt-1">
                 <label asp-for="AuthorName" class="control-label"></label>
                 <input asp-for="AuthorName" class="form-control" />
                 <span asp-validation-for="AuthorName" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group mt-1">
                 <label asp-for="AuthorEmail" class="control-label"></label>
                 <input asp-for="AuthorEmail" class="form-control" />
                 <span asp-validation-for="AuthorEmail" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group mt-1">
                 <label asp-for="Description" class="control-label"></label>
                 <input asp-for="Description" class="form-control" />
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group mt-1">
                 <label asp-for="AuthorPhoto" class="control-label"></label>
-                <input asp-for="AuthorPhoto" class="form-control" accept="image/*" />
+                <input asp-for="AuthorPhoto" onchange="PreviewFile()" id="fileInput" class="form-control" accept="image/*" />
                 <span asp-validation-for="AuthorPhoto" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            
+            <div class="form-group mt-1">
+                @*preview file*@
+                <img id="preview" src="#" alt="Preview" style="max-width: 100%; max-height: 100%; display: none">
+            </div>
+            <div class="form-group mt-3">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
@@ -43,6 +48,26 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
+
+
+<script>
+    function PreviewFile() {
+        const preview = document.getElementById('preview');
+        const file = document.getElementById('fileInput').files[0];
+        const reader = new FileReader();
+
+        reader.onloadend = function() {
+            preview.src = reader.result;
+            preview.style.display = 'block';
+        }
+
+        if(file) {
+            reader.readAsDataURL(file);
+        } else {
+            preview.src = "";
+        }
+    }
+</script>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
