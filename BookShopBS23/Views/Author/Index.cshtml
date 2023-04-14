@@ -1,11 +1,6 @@
 ﻿@model IEnumerable<BookShopBS23.ViewModels.AuthorIndexViewModel>
 
-@{
-    ViewData["Title"] = "Index";
-}
-
-<h1>Index</h1>
-
+<h1>@ViewBag.Title</h1>
 <p>
     <a asp-action="Create" style="text-decoration: none; float:right">
         <h5>Create New</h5>
@@ -20,13 +15,12 @@
             <th>
                 @Html.DisplayNameFor(model => model.AuthorEmail)
             </th>
-            @*<th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>*@
             <th>
                 @Html.DisplayNameFor(model => model.AuthorPhoto)
             </th>
-            <th></th>
+            <th>
+                Actions
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -47,8 +41,9 @@
                 <img src="data:@item.Value.PictureFormat;base64,@item.Value.AuthorPhoto" width="80" height="100" />
             </td>
             <td>
+                <a asp-action="Details" asp-route-id="@item.Value.AuthorId" style="text-decoration: none;">Details</a> |
                 <a asp-action="Edit" asp-route-id="@item.Value.AuthorId" style="text-decoration: none;">Edit</a> |
-                <a asp-action="Delete" asp-route-id="@item.Value.AuthorId" style="text-decoration: none;">Delete</a>
+                <a asp-action="Delete" asp-route-id="@item.Value.AuthorId" style="text-decoration: none;color: red">Delete</a>
             </td>
         </tr>
 }

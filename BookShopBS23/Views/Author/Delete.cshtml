@@ -1,9 +1,6 @@
 ﻿@model BookShopBS23.ViewModels.AuthorDeleteViewModel
 
-@{
-    ViewData["Title"] = "Delete";
-}
-
+<h1>@ViewBag.Title</h1>
 <h3>Are you sure you want to delete author - @Model.AuthorName</h3>
 <img class="mt-1" src="data:@Model.PictureFormat;base64,@Model.AuthorPhoto" />
 <div class="mt-1">

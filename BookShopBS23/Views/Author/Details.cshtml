@@ -1,16 +1,14 @@
 ﻿@model BookShopBS23.ViewModels.AuthorDetailsViewModel
 
-@{
-    ViewData["Title"] = "Details";
-}
+<h1>@ViewBag.Title @Model.AuthorName</h1>
 
-<h1>Author Details</h1>
 <div>
     <img src="data:@Model.PictureFormat;base64,@Model.AuthorPhoto" />
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.AuthorId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model?.AuthorId" style="text-decoration: none;">Edit</a> |
+    <a asp-action="Index" style="text-decoration: none;" >Back to List</a> |
+    <a asp-action="Delete" asp-route-id="@Model?.AuthorId" style="text-decoration: none; color:red">Delete</a>
 </div>
 <div>
     <hr />
@@ -54,7 +52,7 @@
                 @foreach (var book in Model.Books.Select((value, index) => new {Value = value, Index = index}))
                 {
                     <tr class="@((book.Index % 2 == 0) ? "even" : "odd")">
-                        <td><a asp-controller="Book" asp-action="Details" asp-route-id="@book.Value.BookId">@book.Value.Title</a></td>
+                        <td><a asp-controller="Book" asp-action="Details" asp-route-id="@book.Value.BookId" style="text-decoration: none;">@book.Value.Title</a></td>
                         <td>@book.Value.publicationDate.ToShortDateString()</td>
                         <td>@book.Value.ISBN</td>
                         <td><img src="data:@book.Value.PictureFormat;base64,@book.Value.CoverPhoto" width="80" height="100" /></td>

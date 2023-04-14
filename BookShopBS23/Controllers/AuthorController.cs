@@ -23,6 +23,7 @@ namespace BookShopBS23.Controllers
         // GET: Author
         public async Task<IActionResult> Index()
         {
+            ViewBag.Title = "List of all the authors";
             if(bookShopDbContext.Authors == null)
             {
                 return Problem("The Author Entity doesn't exits in 'BookShopDbContex.Authors'");
@@ -49,6 +50,7 @@ namespace BookShopBS23.Controllers
         // GET: Author/Details/id
         public async Task<IActionResult> Details(string id)
         {
+            ViewBag.Title = "Author";
             if (id == null || bookShopDbContext.Authors == null)
             {
                 return NotFound();
@@ -100,6 +102,7 @@ namespace BookShopBS23.Controllers
         // GET: Author/Create
         public IActionResult Create()
         {
+            ViewBag.Title = "Create an Author";
             return View();
         }
 
@@ -137,6 +140,7 @@ namespace BookShopBS23.Controllers
         // GET: Author/Edit/id
         public async Task<IActionResult> Edit(string id)
         {
+            ViewBag.Title = "Updation of Author Details";
             if (id == null || bookShopDbContext.Authors == null)
             {
                 return NotFound();
@@ -220,6 +224,8 @@ namespace BookShopBS23.Controllers
         // GET: Author/Delete/id
         public async Task<IActionResult> Delete(string id)
         {
+            ViewBag.Title = "Deletion of Author";
+
             if (id == null || bookShopDbContext.Authors == null)
             {
                 return NotFound();
