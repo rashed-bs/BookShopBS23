@@ -43,6 +43,14 @@ namespace BookShopBS23.Controllers
                 return NotFound();
             }
 
+            var authorDetailsViewModel = new AuthorDetailsViewModel()
+            {
+                AuthorEmail = author.AuthorEmail, 
+                AuthorName = author.AuthorName,
+                AuthorId = author.AuthorId,
+                Description = author.Description,
+                PictureFormat = author.
+            }
             return View(author);
         }
 
