@@ -1,6 +1,7 @@
 ﻿using BookShopBS23.Models;
 using Microsoft.Build.Framework;
 
+
 namespace BookShopBS23.ViewModels
 {
     public class AuthorDetailsViewModel
@@ -22,6 +23,8 @@ namespace BookShopBS23.ViewModels
 
         [Required]
         public string PictureFormat { get; set; }
+
+        public ICollection<BookDetailsPageViewModel>? Books { get; set; }
 
     }
 }
