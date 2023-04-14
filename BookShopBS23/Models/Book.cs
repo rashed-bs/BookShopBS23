@@ -17,6 +17,8 @@ namespace BookShopBS23.Models
 
         public Byte[] CoverPhoto { get; set; }
 
+        public string PictureFormat { get; set; }
+
         // navigation properties 
         [ForeignKey("Author")]
         public string AuthorId { get; set; }

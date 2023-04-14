@@ -37,13 +37,46 @@ namespace BookShopBS23.Controllers
             }
 
             var author = await bookShopDbContext.Authors
+                .Include(a => a.Books)
                 .FirstOrDefaultAsync(m => m.AuthorId == id);
             if (author == null)
             {
                 return NotFound();
             }
 
-            return View(author);
+            var authorDetailsViewModel = new AuthorDetailsViewModel()
+            {
+                AuthorEmail = author.AuthorEmail,
+                AuthorName = author.AuthorName,
+                AuthorId = author.AuthorId,
+                Description = author.Description,
+                PictureFormat = author.PictureFormat,
+                AuthorPhoto = Convert.ToBase64String(author.AuthorPhoto),
+                Books = new List<BookDetailsPageViewModel>()
+            };
+            if(author.Books != null)
+            {
+                foreach (var book in author.Books)
+                {
+                    var bookView = new BookDetailsPageViewModel()
+                    {
+                        PictureFormat = book.PictureFormat,
+                        AuthorId = book.AuthorId,
+                        BookId = book.BookId,
+                        Description = book.Description,
+                        Genre = book.Genre,
+                        ISBN = book.ISBN,
+                        publicationDate = book.publicationDate,
+                        Title = book.Title,
+                        Language = book.Language,
+                        CoverPhoto = Convert.ToBase64String(book.CoverPhoto),
+                        Author = book.Author
+                    };
+                    authorDetailsViewModel?.Books?.Add(bookView);
+                }
+            }
+            
+            return View(authorDetailsViewModel);
         }
 
         // GET: Author/Create
@@ -68,7 +101,8 @@ namespace BookShopBS23.Controllers
                 {
                     AuthorName = authorCreationViewModel.AuthorName,
                     AuthorEmail = authorCreationViewModel.AuthorEmail,
-                    Description = authorCreationViewModel.Description
+                    Description = authorCreationViewModel.Description, 
+                    PictureFormat = authorCreationViewModel.AuthorPhoto.ContentType
                 };
 
                 var memoryStream = new MemoryStream();
@@ -138,6 +172,7 @@ namespace BookShopBS23.Controllers
                     author.AuthorName = authorEditViewModel.AuthorName;
                     author.AuthorEmail = authorEditViewModel.AuthorEmail;
                     author.Description = authorEditViewModel.Description;
+                    author.PictureFormat = authorEditViewModel.AuthorPhoto.ContentType;
 
                     // from iformfile to byte array
                     var memoryStream = new MemoryStream();

@@ -43,7 +43,25 @@ namespace BookShopBS23.Controllers
             {
                 return NotFound();
             }
-            return View(book);
+
+            var bookDetailsViewModel = new BookDetailsPageViewModel()
+            {
+                BookId = book.BookId,
+                Author = book.Author,
+                ISBN = book.ISBN,
+                PictureFormat = book.PictureFormat,
+                AuthorId = book.AuthorId,
+                Genre = book.Genre,
+                Title = book.Title,
+                publicationDate = book.publicationDate,
+                Language = book.Language,
+                Description = book.Description,
+                CoverPhoto = Convert.ToBase64String(book.CoverPhoto)
+            };
+
+
+
+            return View(bookDetailsViewModel);
         }
 
         // GET: Book/Create
@@ -55,7 +73,7 @@ namespace BookShopBS23.Controllers
         }
 
         // POST: Book/Create
-        [HttpPost] // only post methods
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(BookCreationViewModel bookCreationViewModel)
         {
@@ -74,7 +92,8 @@ namespace BookShopBS23.Controllers
                     ISBN = bookCreationViewModel.ISBN,
                     Language = bookCreationViewModel.Language,
                     publicationDate = bookCreationViewModel.publicationDate,
-                    AuthorId = bookCreationViewModel.AuthorId
+                    AuthorId = bookCreationViewModel.AuthorId, 
+                    PictureFormat = bookCreationViewModel.CoverPhoto.ContentType
                 };
                 // converting the coverPhoto from FormFile to byte array
                 var memoryStream = new MemoryStream();
@@ -156,7 +175,8 @@ namespace BookShopBS23.Controllers
                         ISBN = bookEditViewModel.ISBN,
                         Language = bookEditViewModel.Language,
                         publicationDate = bookEditViewModel.publicationDate,
-                        AuthorId = bookEditViewModel.AuthorId
+                        AuthorId = bookEditViewModel.AuthorId,
+                        PictureFormat = bookEditViewModel.CoverPhoto.ContentType
                     };
                     // converting the coverPhoto from FormFile to byte array
                     var memoryStream = new MemoryStream();
