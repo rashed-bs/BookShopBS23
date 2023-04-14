@@ -258,7 +258,26 @@ namespace BookShopBS23.Controllers
             {
                 return NotFound();
             }
-            return View(book);
+
+
+            var bookDeletePageViewModel = new BookDeletePageViewModel()
+            {
+                AuthorId = book.AuthorId,
+                BookId = book.BookId,
+                PictureFormat = book.PictureFormat,
+                Author = book.Author,
+                Description = book.Description,
+                Genre = book.Genre,
+                CoverPhoto = Convert.ToBase64String(book.CoverPhoto),
+                ISBN = book.ISBN,
+                Language = book.Language,
+                publicationDate = book.publicationDate,
+                Title = book.Title
+            };
+
+
+
+            return View(bookDeletePageViewModel);
         }
 
         // POST: Book/Delete/5

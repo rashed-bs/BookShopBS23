@@ -226,13 +226,47 @@ namespace BookShopBS23.Controllers
             }
 
             var author = await bookShopDbContext.Authors
+                .Include(b => b.Books)
                 .FirstOrDefaultAsync(m => m.AuthorId == id);
             if (author == null)
             {
                 return NotFound();
             }
 
-            return View(author);
+            var authorDeleteViewModel = new AuthorDeleteViewModel()
+            {
+                AuthorName = author.AuthorName,
+                AuthorId = author.AuthorId,
+                AuthorEmail = author.AuthorEmail,
+                AuthorPhoto = Convert.ToBase64String(author.AuthorPhoto),
+                PictureFormat = author.PictureFormat,
+                Description = author.Description,
+                Books = new List<BookDetailsPageViewModel>()
+            };
+
+            if(author.Books != null)
+            {
+                foreach (var book in author.Books)
+                {
+                    var bookDetailPageViewModel = new BookDetailsPageViewModel()
+                    {
+                        AuthorId = book.AuthorId,
+                        PictureFormat = book.PictureFormat,
+                        Description = book.Description,
+                        BookId = book.BookId,
+                        Genre = book.Genre,
+                        Author = book.Author,
+                        ISBN = book.ISBN,
+                        Language = book.Language,
+                        publicationDate = book.publicationDate,
+                        CoverPhoto = Convert.ToBase64String(book.CoverPhoto),
+                        Title = book.Title
+                    };
+                    authorDeleteViewModel.Books.Add(bookDetailPageViewModel);
+                }
+            }
+
+            return View(authorDeleteViewModel);
         }
 
         // POST: Author/Delete/id
