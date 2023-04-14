@@ -24,8 +24,34 @@ namespace BookShopBS23.Controllers
         // GET: Books
         public async Task<IActionResult> Index()
         {
-            var booksWithAuthors = bookShopDbContext.Books.Include(b => b.Author);
-            return View(await booksWithAuthors.ToListAsync());
+
+            var booksWithAuthors = await bookShopDbContext.Books.Include(b => b.Author).ToListAsync();
+            if(booksWithAuthors == null)
+            {
+                return NotFound();
+            }
+
+            var booksWithAuthorsViewModel = new List<BookIndexPageViewModel>();
+            foreach( var book in booksWithAuthors )
+            {
+                var bookWithAuthorViewModel = new BookIndexPageViewModel()
+                {
+                    BookId = book.BookId,
+                    Author = book.Author,
+                    Title = book.Title,
+                    PictureFormat = book.PictureFormat,
+                    Description = book.Description,
+                    Genre = book.Genre,
+                    ISBN = book.ISBN,
+                    publicationDate = book.publicationDate,
+                    Language = book.Language,
+                    CoverPhoto = Convert.ToBase64String(book.CoverPhoto),
+                    AuthorId = book.AuthorId
+                };
+                booksWithAuthorsViewModel.Add(bookWithAuthorViewModel);
+            }
+
+            return View(booksWithAuthorsViewModel);
         }
 
         // GET: Book/Details/id
@@ -232,7 +258,26 @@ namespace BookShopBS23.Controllers
             {
                 return NotFound();
             }
-            return View(book);
+
+
+            var bookDeletePageViewModel = new BookDeletePageViewModel()
+            {
+                AuthorId = book.AuthorId,
+                BookId = book.BookId,
+                PictureFormat = book.PictureFormat,
+                Author = book.Author,
+                Description = book.Description,
+                Genre = book.Genre,
+                CoverPhoto = Convert.ToBase64String(book.CoverPhoto),
+                ISBN = book.ISBN,
+                Language = book.Language,
+                publicationDate = book.publicationDate,
+                Title = book.Title
+            };
+
+
+
+            return View(bookDeletePageViewModel);
         }
 
         // POST: Book/Delete/5
