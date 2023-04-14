@@ -16,3 +16,11 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.even {
+    background-color: #f2f2f2; /* light gray */
+}
+
+.odd {
+    background-color: #fff; /* white */
+}
