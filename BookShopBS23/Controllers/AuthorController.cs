@@ -8,93 +8,57 @@ using Microsoft.EntityFrameworkCore;
 using BookShopBS23.Data;
 using BookShopBS23.Models;
 using BookShopBS23.ViewModels;
+using BookShopBS23.Service;
+using BookShopBS23.IService;
 
 namespace BookShopBS23.Controllers
 {
     public class AuthorController : Controller
     {
         private readonly BookShopDbContex bookShopDbContext;
+        private readonly IAuthorService authorService;
 
-        public AuthorController(BookShopDbContex context)
+        // Dependencies injection
+        public AuthorController(BookShopDbContex context, IAuthorService author)
         {
             bookShopDbContext = context;
+            authorService = author;
         }
 
-        // GET: Author
+        // GET: Index
         public async Task<IActionResult> Index()
         {
-            if(bookShopDbContext.Authors == null)
+            ViewBag.Title = "List of all the authors";
+
+            if (bookShopDbContext.Authors == null)
             {
-                return Problem("The Author Entity doesn't exits in 'BookShopDbContex.Authors'");
+                return NotFound();
             }
-            var authors = await bookShopDbContext.Authors.ToListAsync();
-            var authorsViewModel = new List<AuthorIndexViewModel>();
-            
-            foreach (var author in authors)
-            {
-                var authorViewModel = new AuthorIndexViewModel()
-                {
-                    AuthorEmail = author.AuthorEmail,
-                    AuthorName = author.AuthorName,
-                    AuthorId = author.AuthorId,
-                    Description = author.Description,
-                    PictureFormat = author.PictureFormat,
-                    AuthorPhoto = Convert.ToBase64String(author.AuthorPhoto)
-                };
-                authorsViewModel.Add(authorViewModel);
-            }
+            var authors = authorService.GetAuthorsAsync();
+            var authorsViewModel = authorService.AuthorToAuthorViewModelEnumerable(await authors);
             return View(authorsViewModel);
         }
 
         // GET: Author/Details/id
         public async Task<IActionResult> Details(string id)
         {
+            ViewBag.Title = "Author";
+
             if (id == null || bookShopDbContext.Authors == null)
             {
                 return NotFound();
             }
 
-            var author = await bookShopDbContext.Authors
-                .Include(a => a.Books)
-                .FirstOrDefaultAsync(m => m.AuthorId == id);
+            var author = authorService.FindByIdAsync(id);
+
             if (author == null)
             {
                 return NotFound();
             }
 
-            var authorDetailsViewModel = new AuthorDetailsViewModel()
-            {
-                AuthorEmail = author.AuthorEmail,
-                AuthorName = author.AuthorName,
-                AuthorId = author.AuthorId,
-                Description = author.Description,
-                PictureFormat = author.PictureFormat,
-                AuthorPhoto = Convert.ToBase64String(author.AuthorPhoto),
-                Books = new List<BookDetailsPageViewModel>()
-            };
-            if(author.Books != null)
-            {
-                foreach (var book in author.Books)
-                {
-                    var bookView = new BookDetailsPageViewModel()
-                    {
-                        PictureFormat = book.PictureFormat,
-                        AuthorId = book.AuthorId,
-                        BookId = book.BookId,
-                        Description = book.Description,
-                        Genre = book.Genre,
-                        ISBN = book.ISBN,
-                        publicationDate = book.publicationDate,
-                        Title = book.Title,
-                        Language = book.Language,
-                        CoverPhoto = Convert.ToBase64String(book.CoverPhoto),
-                        Author = book.Author
-                    };
-                    authorDetailsViewModel?.Books?.Add(bookView);
-                }
-            }
-            
-            return View(authorDetailsViewModel);
+            var authorViewModel = authorService.AuthorToAuthorViewModel(await author);
+
+            return View(authorViewModel);
         }
 
         // GET: Author/Create
@@ -119,7 +83,7 @@ namespace BookShopBS23.Controllers
                 {
                     AuthorName = authorCreationViewModel.AuthorName,
                     AuthorEmail = authorCreationViewModel.AuthorEmail,
-                    Description = authorCreationViewModel.Description, 
+                    Description = authorCreationViewModel.Description,
                     PictureFormat = authorCreationViewModel.AuthorPhoto.ContentType
                 };
 
@@ -217,56 +181,26 @@ namespace BookShopBS23.Controllers
             return View(authorEditViewModel);
         }
 
+
         // GET: Author/Delete/id
         public async Task<IActionResult> Delete(string id)
         {
+            ViewBag.Title = "Deletion of Author";
+
             if (id == null || bookShopDbContext.Authors == null)
             {
                 return NotFound();
             }
 
-            var author = await bookShopDbContext.Authors
-                .Include(b => b.Books)
-                .FirstOrDefaultAsync(m => m.AuthorId == id);
+            var author = await authorService.FindByIdAsync(id); // author with books
             if (author == null)
             {
                 return NotFound();
             }
 
-            var authorDeleteViewModel = new AuthorDeleteViewModel()
-            {
-                AuthorName = author.AuthorName,
-                AuthorId = author.AuthorId,
-                AuthorEmail = author.AuthorEmail,
-                AuthorPhoto = Convert.ToBase64String(author.AuthorPhoto),
-                PictureFormat = author.PictureFormat,
-                Description = author.Description,
-                Books = new List<BookDetailsPageViewModel>()
-            };
+            var authorViewModel = authorService.AuthorToAuthorViewModel(author);
 
-            if(author.Books != null)
-            {
-                foreach (var book in author.Books)
-                {
-                    var bookDetailPageViewModel = new BookDetailsPageViewModel()
-                    {
-                        AuthorId = book.AuthorId,
-                        PictureFormat = book.PictureFormat,
-                        Description = book.Description,
-                        BookId = book.BookId,
-                        Genre = book.Genre,
-                        Author = book.Author,
-                        ISBN = book.ISBN,
-                        Language = book.Language,
-                        publicationDate = book.publicationDate,
-                        CoverPhoto = Convert.ToBase64String(book.CoverPhoto),
-                        Title = book.Title
-                    };
-                    authorDeleteViewModel.Books.Add(bookDetailPageViewModel);
-                }
-            }
-
-            return View(authorDeleteViewModel);
+            return View(authorViewModel);
         }
 
         // POST: Author/Delete/id
@@ -281,10 +215,9 @@ namespace BookShopBS23.Controllers
             var author = await bookShopDbContext.Authors.FindAsync(id);
             if (author != null)
             {
-                bookShopDbContext.Authors.Remove(author);
+                await authorService.DeleteAsync(author);
             }
 
-            await bookShopDbContext.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

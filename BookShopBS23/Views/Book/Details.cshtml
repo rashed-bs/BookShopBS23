@@ -1,16 +1,11 @@
 ﻿@model BookShopBS23.ViewModels.BookDetailsPageViewModel
 
-@{
-    ViewData["Title"] = "Details";
-}
-
-<h1>Details</h1>
+<h1>@ViewBag.Title</h1>
 
 <div>
-    <h4>Book</h4>
     <hr />
     <div>
-        <img src="data:@Model.PictureFormat;base64,@Model.CoverPhoto"/>
+        <img src="data:@Model.PictureFormat;base64,@Model.CoverPhoto" width="150" height="200"/>
     </div>
     <hr />
     <dl class="row">
@@ -64,6 +59,8 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.BookId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    
+    <a asp-action="Index" style="text-decoration: none;" >Back to List</a>  |
+    <a asp-action="Edit" style="text-decoration: none;" asp-route-id="@Model?.BookId">Edit</a>  |
+    <a asp-action="Delete" style="text-decoration: none; color:red" asp-route-id="@Model?.BookId">Delete</a> 
 </div>

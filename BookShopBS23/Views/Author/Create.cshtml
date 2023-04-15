@@ -13,9 +13,9 @@
         <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             @*<div class="form-group">
-                <label asp-for="AuthorId" class="control-label"></label>
-                <input asp-for="AuthorId" class="form-control" />
-                <span asp-validation-for="AuthorId" class="text-danger"></span>
+            <label asp-for="AuthorId" class="control-label"></label>
+            <input asp-for="AuthorId" class="form-control" />
+            <span asp-validation-for="AuthorId" class="text-danger"></span>
             </div>*@
             <div class="form-group mt-1">
                 <label asp-for="AuthorName" class="control-label"></label>
@@ -55,25 +55,10 @@
 
 
 
-<script>
-    function PreviewFile() {
-        const preview = document.getElementById('preview');
-        const file = document.getElementById('fileInput').files[0];
-        const reader = new FileReader();
-
-        reader.onloadend = function () {
-            preview.src = reader.result;
-            preview.style.display = 'block';
-        }
-
-        if (file) {
-            reader.readAsDataURL(file);
-        } else {
-            preview.src = "";
-        }
-    }
-</script>
+<script src="~/js/photoPreview.js"></script>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
