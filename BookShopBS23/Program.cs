@@ -1,4 +1,6 @@
 using BookShopBS23.Data;
+using BookShopBS23.IService;
+using BookShopBS23.Service;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +14,8 @@ builder.Services.AddControllersWithViews().AddJsonOptions(o =>
 });
 builder.Services.AddDbContext<BookShopDbContex>(options => 
     options.UseSqlServer(builder.Configuration.GetConnectionString("BookShopBS23ConnectionString")));
+builder.Services.AddScoped<IAuthorService, AuthorService>();
+builder.Services.AddScoped<IBookService, BookService>();
 
 var app = builder.Build();
 

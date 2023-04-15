@@ -24,7 +24,7 @@ namespace BookShopBS23.Controllers
         // GET: Books
         public async Task<IActionResult> Index()
         {
-
+            ViewBag.Title = "List of the books";
             var booksWithAuthors = await bookShopDbContext.Books.Include(b => b.Author).ToListAsync();
             if(booksWithAuthors == null)
             {
@@ -57,6 +57,7 @@ namespace BookShopBS23.Controllers
         // GET: Book/Details/id
         public async Task<IActionResult> Details(string id)
         {
+            ViewBag.Title = "Book Details";
             if (id == null || bookShopDbContext.Books == null)
             {
                 return NotFound();
@@ -93,6 +94,7 @@ namespace BookShopBS23.Controllers
         // GET: Book/Create
         public async Task<IActionResult> Create()
         {
+            ViewBag.Title = "Add the Book Details";
             var authors = await bookShopDbContext.Authors.ToListAsync();
             ViewBag.Authors = authors;
             return View();
@@ -148,6 +150,7 @@ namespace BookShopBS23.Controllers
         // GET: Book/Edit/id
         public async Task<IActionResult> Edit(string id)
         {
+            ViewBag.Title = "Updation of Book Details";
             if(id ==  null || bookShopDbContext.Books == null)
             {
                 return NotFound();
@@ -246,6 +249,7 @@ namespace BookShopBS23.Controllers
         // GET: Book/Delete/id
         public async Task<IActionResult> Delete(string id)
         {
+            ViewBag.Title = "Detetion of Book";
             if(id == null || bookShopDbContext.Books == null)
             {
                 return NotFound();
