@@ -1,4 +1,4 @@
-﻿@model BookShopBS23.ViewModels.AuthorCreationViewModel
+﻿@model BookShopBS23.ViewModels.AuthorViewModel
 
 <h1>@ViewBag.Title</h1>
 
@@ -7,11 +7,6 @@
     <div class="col-md-4">
         <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            @*<div class="form-group">
-                <label asp-for="AuthorId" class="control-label"></label>
-                <input asp-for="AuthorId" class="form-control" />
-                <span asp-validation-for="AuthorId" class="text-danger"></span>
-            </div>*@
             <div class="form-group mt-1">
                 <label asp-for="AuthorName" class="control-label"></label>
                 <input asp-for="AuthorName" class="form-control" />
@@ -28,9 +23,9 @@
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group mt-1">
-                <label asp-for="AuthorPhoto" class="control-label"></label>
-                <input id="fileInput" onchange="PreviewFile()" asp-for="AuthorPhoto" class="form-control" accept="image/*" />
-                <span asp-validation-for="AuthorPhoto" class="text-danger"></span>
+                <label asp-for="AuthorPhotoFile" class="control-label"></label>
+                <input id="fileInput" onchange="PreviewFile()" asp-for="AuthorPhotoFile" class="form-control" accept="image/*" />
+                <span asp-validation-for="AuthorPhotoFile" class="text-danger"></span>
             </div>
             <div class="form-group mt-1">
                 @*preview file*@

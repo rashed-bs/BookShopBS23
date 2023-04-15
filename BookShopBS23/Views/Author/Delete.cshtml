@@ -1,4 +1,4 @@
-﻿@model BookShopBS23.ViewModels.AuthorDeleteViewModel
+﻿@model BookShopBS23.ViewModels.AuthorViewModel
 
 <h1>@ViewBag.Title</h1>
 <h3>Are you sure you want to delete author - @Model.AuthorName</h3>
@@ -24,12 +24,6 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Description)
         </dd>
-        @*<dt class = "col-sm-2">
-        @Html.DisplayNameFor(model => model.AuthorPhoto)
-        </dt>
-        <dd class = "col-sm-10">
-        @Html.DisplayFor(model => model.AuthorPhoto)
-        </dd>*@
     </dl>
 
     <div class="mt-1">
