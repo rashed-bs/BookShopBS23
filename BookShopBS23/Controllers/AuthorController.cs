@@ -64,56 +64,77 @@ namespace BookShopBS23.Controllers
         // GET: Author/Create
         public IActionResult Create()
         {
-            ViewBag.Title = "Create an Author";
             return View();
         }
 
         // POST: Author/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(AuthorViewModel authorViewModel)
+        public async Task<IActionResult> Create(AuthorCreationViewModel authorCreationViewModel)
         {
 
-            if (authorViewModel is null)
+            if (authorCreationViewModel is null)
             {
-                throw new ArgumentNullException(nameof(authorViewModel));
+                throw new ArgumentNullException(nameof(authorCreationViewModel));
             }
             if (ModelState.IsValid)
             {
-                var author = authorService.AuthorViewModelToAuthor(authorViewModel);
-                await authorService.SaveAsync(author);
+                var author = new Author()
+                {
+                    AuthorName = authorCreationViewModel.AuthorName,
+                    AuthorEmail = authorCreationViewModel.AuthorEmail,
+                    Description = authorCreationViewModel.Description,
+                    PictureFormat = authorCreationViewModel.AuthorPhoto.ContentType
+                };
+
+                var memoryStream = new MemoryStream();
+                authorCreationViewModel.AuthorPhoto.CopyTo(memoryStream);
+                author.AuthorPhoto = memoryStream.ToArray();
+
+                bookShopDbContext.Add(author);
+                await bookShopDbContext.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            return View(authorViewModel);
+            return View(authorCreationViewModel);
         }
 
         // GET: Author/Edit/id
         public async Task<IActionResult> Edit(string id)
         {
-            ViewBag.Title = "Updation of Author Details";
-            
             if (id == null || bookShopDbContext.Authors == null)
             {
                 return NotFound();
             }
 
-            var author = await authorService.FindByIdAsync(id);
+            var author = await bookShopDbContext.Authors.FindAsync(id);
             if (author == null)
             {
                 return NotFound();
             }
+            var authorEditViewModel = new AuthorEditViewModel()
+            {
+                AuthorId = author.AuthorId,
+                AuthorEmail = author.AuthorEmail,
+                AuthorName = author.AuthorName,
+                Description = author.Description,
+            };
 
-            var authorViewModel = authorService.AuthorToAuthorViewModel(author);
+            // from byte array to formFile
+            var stream = new MemoryStream(author.AuthorPhoto);
+            IFormFile file = new FormFile(stream, 0, author.AuthorPhoto.Length, "name", "filename");
+            authorEditViewModel.AuthorPhoto = file;
 
-            return View(authorViewModel);
+            return View(authorEditViewModel);
         }
 
         // POST: Author/Edit/id
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, AuthorViewModel authorViewModel)
+        public async Task<IActionResult> Edit(string id, AuthorEditViewModel authorEditViewModel)
         {
-            if (authorViewModel == null || id != authorViewModel.AuthorId)
+
+
+            if (authorEditViewModel == null || id != authorEditViewModel.AuthorId)
             {
                 return NotFound();
             }
@@ -122,12 +143,31 @@ namespace BookShopBS23.Controllers
             {
                 try
                 {
-                    var author = authorService.AuthorViewModelToAuthor(authorViewModel);
-                    await authorService.UpdateAsync(author);
+                    var author = await bookShopDbContext.Authors.FindAsync(id);
+
+                    if (author == null)
+                    {
+                        return NotFound();
+                    }
+
+                    // updating the author object 
+                    author.AuthorName = authorEditViewModel.AuthorName;
+                    author.AuthorEmail = authorEditViewModel.AuthorEmail;
+                    author.Description = authorEditViewModel.Description;
+                    author.PictureFormat = authorEditViewModel.AuthorPhoto.ContentType;
+
+                    // from iformfile to byte array
+                    var memoryStream = new MemoryStream();
+                    authorEditViewModel.AuthorPhoto.CopyTo(memoryStream);
+                    author.AuthorPhoto = memoryStream.ToArray();
+
+
+                    bookShopDbContext.Update(author);
+                    await bookShopDbContext.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!AuthorExists(authorViewModel.AuthorId))
+                    if (!AuthorExists(authorEditViewModel.AuthorId))
                     {
                         return NotFound();
                     }
@@ -138,8 +178,9 @@ namespace BookShopBS23.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(authorViewModel);
+            return View(authorEditViewModel);
         }
+
 
         // GET: Author/Delete/id
         public async Task<IActionResult> Delete(string id)
